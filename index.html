@@ -11,7 +11,7 @@
       --bg1:#fffdf6; --bg2:#fffbea;
       --text:#422006; --muted:#6b4a09;
       --amber1:#facc15; --amber2:#fcd34d; --amber3:#fde68a;
-      --card:#fffdf6; --paper:#ffffff;
+      --paper:#ffffff;
     }
     *{box-sizing:border-box}
     html{scroll-behavior:smooth;}
@@ -20,80 +20,115 @@
       background:linear-gradient(160deg,var(--bg1),var(--bg2)); overflow-x:hidden;
     }
 
-    /* ====== PANTALLA DE CUENTA REGRESIVA (COOLDOWN) ====== */
-    #lockdownScreen{
-      position:fixed; inset:0; z-index:400;
-      display:flex; flex-direction:column; justify-content:center; align-items:center;
+    /* ====== JUEGO DE SECUENCIA (SIMON) ====== */
+    .game-overlay {
+        position: fixed; inset: 0; z-index: 600;
+        display: flex; flex-direction: column;
+        justify-content: center; align-items: center;
+        background-image: linear-gradient(rgba(255, 253, 246, 0.9), rgba(255, 253, 246, 0.98)), url('https://img.freepik.com/vector-gratis/fondo-acuarela-rosa-pintado-mano-detallado_1048-17039.jpg');
+        background-size: cover; background-position: center;
+        transition: opacity .8s ease-out, visibility .8s ease-out;
+    }
+    .game-overlay[hidden] {
+        opacity: 0;
+        visibility: hidden;
+    }
+    .game-container {
+        text-align: center;
+        background: var(--paper);
+        padding: clamp(20px, 5vw, 40px);
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    .game-title {
+        font-family: 'Sacramento', cursive;
+        font-size: clamp(40px, 8vw, 58px);
+        color: #a16207;
+        margin: 0 0 10px;
+    }
+    .game-status {
+        font-size: 16px;
+        color: var(--muted);
+        min-height: 24px;
+        margin-bottom: 20px;
+        font-weight: bold;
+    }
+    .simon-pads {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        width: clamp(280px, 70vw, 350px);
+        margin: 0 auto;
+    }
+    .simon-pad {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        border-radius: 16px;
+        cursor: pointer;
+        transition: transform 0.1s, box-shadow 0.2s;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        border: 2px solid rgba(255,255,255,0.8);
+    }
+    .simon-pad:hover { transform: scale(1.03); }
+    .simon-pad.active {
+        transform: scale(0.95);
+        box-shadow: 0 0 25px var(--glow-color), inset 0 0 15px rgba(255,255,255,0.5);
+        filter: brightness(1.3);
+    }
+    .simon-pad[data-color="1"] { background: #d97706; --glow-color: #fbbf24; }
+    .simon-pad[data-color="2"] { background: #ca8a04; --glow-color: #fde047; }
+    .simon-pad[data-color="3"] { background: #a16207; --glow-color: #facc15; }
+    .simon-pad[data-color="4"] { background: #b45309; --glow-color: #fcd34d; }
+    
+    #startGameBtn { margin-top: 25px; }
+
+    /* ====== MODALES DE LOGIN (Usuario y Admin) ====== */
+    .login-overlay {
+      position:fixed; inset:0; z-index:500;
+      display:grid; place-items:center;
       background-image: linear-gradient(rgba(255, 253, 246, 0.85), rgba(255, 253, 246, 0.95)), url('https://img.freepik.com/vector-gratis/fondo-acuarela-rosa-pintado-mano-detallado_1048-17039.jpg');
       background-size:cover; background-position:center;
-      padding:20px; text-align:center;
-      transition: opacity .8s ease;
+      backdrop-filter:blur(8px);
+      opacity:0; animation: fadeInModal .8s ease forwards;
     }
-    #lockdownScreen[hidden]{display:none;}
-    .lockdown-title{
-      font-family:'Sacramento',cursive; font-size:clamp(48px, 10vw, 82px);
-      color:#d97706; margin:0 0 10px; text-shadow: 0 2px 8px rgba(0,0,0,.1);
-    }
-    .lockdown-subtitle{
-      font-size:18px; color:var(--muted); margin:0 0 24px; font-weight:600;
-    }
-    #countdown{
-      display:flex; gap: clamp(8px, 3vw, 15px); justify-content:center;
-    }
-    .countdown-unit{
-      background:rgba(255,255,255,.8);
-      border: 1px solid #facc1580;
-      border-radius:12px; padding:12px 18px;
-      box-shadow:0 6px 20px rgba(0,0,0,.15);
-      width: clamp(70px, 18vw, 90px);
-    }
-    .countdown-unit span{ display:block; }
-    .countdown-unit .number{
-      font-size:clamp(28px, 8vw, 42px); font-weight:800; color:#a16207;
-    }
-    .countdown-unit .label{
-      font-size:12px; font-weight:600; color:var(--muted); margin-top:4px;
-    }
-    .admin-login-btn{
-      position:absolute; bottom:15px; right:15px;
-      background:rgba(255,255,255,.7); color:#a16207;
-      border:1px solid #facc15a6; border-radius:999px;
-      padding: 8px 15px; font-size:12px; font-weight:800;
-      cursor:pointer; backdrop-filter:blur(4px);
-    }
+    .login-overlay.show { opacity: 1; }
+    .login-overlay[hidden]{ display:none; }
+    @keyframes fadeInModal { to { opacity: 1; } }
 
-    /* Modal de Admin */
-    #adminModal{
-      position:fixed; inset:0; z-index:500;
-      display:none; place-items:center;
-      background:rgba(0,0,0,.5); backdrop-filter:blur(8px);
+    .login-card{
+      background:var(--paper); padding:28px 32px; border-radius:16px;
+      box-shadow:0 10px 30px rgba(0,0,0,.2); width:min(90vw, 360px);
+      text-align:center;
+      opacity:0; transform: translateY(20px);
+      animation: slideUpModal .7s .3s ease forwards;
     }
-    #adminModal.show{display:grid;}
-    .admin-card{
-      background:var(--paper); padding:24px; border-radius:16px;
-      box-shadow:0 10px 30px rgba(0,0,0,.2); width:min(90vw, 320px);
-    }
-    .admin-card h3{
-      margin:0 0 16px; text-align:center; font-weight:800; color:#a16207;
-    }
-    .admin-card input{
-      width:100%; padding:10px; margin-bottom:10px; border:1px solid #fde68a;
-      border-radius:8px; font-size:16px;
-    }
-    .admin-actions{display:flex; gap:10px; justify-content:flex-end; margin-top:8px;}
-    #adminError{color:#b91c1c; font-size:13px; font-weight:bold; margin-top:8px; text-align:center; display:none;}
+    @keyframes slideUpModal { to { opacity:1; transform:translateY(0); } }
 
+    .login-card h3{
+      margin:0 0 8px; font-weight:800; color:#a16207; font-size:38px;
+      font-family: 'Sacramento', cursive;
+    }
+    .login-card .hint{ font-size:14px; color:var(--muted); margin-bottom:20px; }
+    .login-card input{
+      width:100%; padding:12px; margin-bottom:12px; border:1px solid var(--amber3);
+      border-radius:8px; font-size:16px; text-align:center;
+      transition: box-shadow .3s, border-color .3s;
+    }
+    .login-card input:focus {
+      outline: none; border-color: var(--amber1); box-shadow: 0 0 10px rgba(250, 204, 21, .5);
+    }
+    .login-actions{display:flex; gap:10px; justify-content:center; margin-top:8px;}
+    .login-error-msg{color:#b91c1c; font-size:13px; font-weight:bold; margin-top:12px; text-align:center; display:none;}
+    .admin-switch { margin-top: 20px; font-size: 12px; }
+    .admin-switch a { color: var(--muted); cursor: pointer; text-decoration: underline; }
 
-    /* ====== FLORES DE FONDO (no pisan el footer) ====== */
+    /* ====== FLORES DE FONDO ====== */
     .bg-decor{position:fixed;left:0;right:0;top:0;bottom:84px;z-index:0;pointer-events:none;overflow:hidden}
     .float-img{
       position:absolute; opacity:.8; width:clamp(80px,10vw,130px);
       animation:floatY linear infinite; filter:drop-shadow(0 0 14px rgba(250,204,21,.45));
     }
-    @keyframes floatY{
-      0%{transform:translateY(110%) rotate(0) scale(var(--s,1))}
-      100%{transform:translateY(-120%) rotate(360deg) scale(var(--s,1))}
-    }
+    @keyframes floatY{ 0%{transform:translateY(110%) rotate(0) scale(var(--s,1))} 100%{transform:translateY(-120%) rotate(360deg) scale(var(--s,1))} }
 
     /* ====== GATE (Login + Cuestionario) ====== */
     .gate{
@@ -108,9 +143,7 @@
       box-shadow:0 12px 36px rgba(0,0,0,.22);
       padding:clamp(18px, 4vw, 26px) clamp(16px, 4vw, 22px);
     }
-    .gate-title{
-      font-family:'Sacramento',cursive; font-size:clamp(42px, 8vw, 52px); margin:0 0 6px; color:#d97706; text-align:center;
-    }
+    .gate-title{ font-family:'Sacramento',cursive; font-size:clamp(42px, 8vw, 52px); margin:0 0 6px; color:#d97706; text-align:center; }
     .gate-sub{color:var(--muted); text-align:center; margin:0 0 14px; font-size:15px}
     .step-badge{
       display:inline-block; padding:6px 12px; border-radius:999px; font-weight:800;
@@ -141,18 +174,12 @@
     .hero{
       width:min(100%,1050px); border-radius:22px; text-align:center; background:rgba(255,255,255,.92);
       box-shadow:0 12px 36px rgba(0,0,0,.22); padding: clamp(24px, 5vw, 36px) clamp(16px, 4vw, 26px);
-      opacity:0; animation: fadeIn 1s ease forwards; position:relative;
+      opacity:0; animation: fadeInContent 1s ease forwards; position:relative;
     }
-    @keyframes fadeIn{ to{opacity:1;} }
-
-    h1{
-      margin:0; font-weight:800; font-size:clamp(36px,8vw,74px); font-family:'Sacramento',cursive; color:#d97706;
-      transition: text-shadow .4s ease; cursor: default;
-    }
+    @keyframes fadeInContent{ to{opacity:1;} }
+    h1{ margin:0; font-weight:800; font-size:clamp(36px,8vw,74px); font-family:'Sacramento',cursive; color:#d97706; transition: text-shadow .4s ease; cursor: default; }
     h1:hover{ text-shadow: 0 0 12px rgba(250,204,21,.8); }
     .subtitle{color:var(--muted); margin:10px 0 20px; font-size: clamp(16px, 4vw, 18px);}
-
-    /* Cards románticas */
     .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin:10px 0 18px}
     .card{
       border-radius:16px; background:var(--card); padding:16px;
@@ -160,219 +187,136 @@
       font-weight:800; color:#a16207; opacity:0; animation: slideUp .6s ease forwards;
     }
     .card:nth-child(2){animation-delay: .1s;} .card:nth-child(3){animation-delay: .2s;}
-    @keyframes slideUp {
-      from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);}
-    }
-    .yt-link{
-      display:inline-block; margin-top:8px; background:var(--amber2); color:#3a2a05;
-      text-decoration:none; padding:6px 12px; font-size:12px; border-radius:999px;
-      font-weight:bold; transition: all .3s ease; box-shadow: 0 2px 5px rgba(0,0,0,.15);
-    }
+    @keyframes slideUp { from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
+    .yt-link{ display:inline-block; margin-top:8px; background:var(--amber2); color:#3a2a05; text-decoration:none; padding:6px 12px; font-size:12px; border-radius:999px; font-weight:bold; transition: all .3s ease; box-shadow: 0 2px 5px rgba(0,0,0,.15); }
     .yt-link:hover{transform:scale(1.05); box-shadow: 0 4px 8px rgba(0,0,0,.2);}
-
-    /* Carta de amor */
-    .love-letter{
-      margin-top:24px; padding:20px; background:#fffdf6; border-radius:16px;
-      box-shadow:0 6px 16px rgba(0,0,0,.15);
-      font-size: clamp(16px, 4vw, 18px); line-height:1.7; white-space:pre-line; min-height:170px;
-      opacity:0; transition:opacity .9s ease;
-    }
+    .love-letter{ margin-top:24px; padding:20px; background:#fffdf6; border-radius:16px; box-shadow:0 6px 16px rgba(0,0,0,.15); font-size: clamp(16px, 4vw, 18px); line-height:1.7; white-space:pre-line; min-height:170px; opacity:0; transition:opacity .9s ease; }
     .love-letter.visible{opacity:1}
     .signature{font-family:'Sacramento',cursive; font-size:34px; color:#a16207; margin-top:16px; opacity:0; transition:opacity .6s}
     .signature.show{opacity:1}
-
-    /* Galería de Fotos */
-    .gallery-container {
-      margin: 24px auto 0; max-width: 350px; position: relative;
-    }
+    .gallery-container { margin: 24px auto 0; max-width: 350px; position: relative; }
     .gallery-slide { display: none; }
     .gallery-slide.active { display: block; }
-    .gallery-photo img {
-      width: 210px; height: 210px; object-fit: cover; border-radius: 50%;
-      border: 6px solid var(--amber2); box-shadow: 0 0 30px rgba(250,204,21,.5);
-      animation: pulse 2.5s infinite ease-in-out;
-    }
+    .gallery-photo img { width: 210px; height: 210px; object-fit: cover; border-radius: 50%; border: 6px solid var(--amber2); box-shadow: 0 0 30px rgba(250,204,21,.5); animation: pulse 2.5s infinite ease-in-out; }
     @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
-    .gallery-nav {
-      position: absolute; top: 50%; width: calc(100% + 40px); left: -20px;
-      display: flex; justify-content: space-between; transform: translateY(-50%);
-    }
-    .gallery-nav button {
-      background: rgba(255,255,255,.8); border: 1px solid var(--amber3);
-      border-radius: 50%; width: 40px; height: 40px;
-      cursor: pointer; font-size: 20px; color: var(--muted);
-      box-shadow: 0 2px 6px rgba(0,0,0,.15);
-    }
-    .photo-caption {
-      margin-top: 12px; font-weight: 600; color: var(--muted); font-size: 14px; min-height: 20px;
-    }
-    
-    /* ====== CONTENEDOR CENTRADO PARA REPRODUCTOR Y BOTONES ====== */
-    .media-actions-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-      margin-top: 24px;
-    }
-
-    /* Reproductor de música */
-    .music-box{
-      padding:14px; border-radius:14px; background:#fffef8;
-      box-shadow:0 4px 12px rgba(0,0,0,.15); display:none; width:100%; max-width:450px;
-    }
+    .gallery-nav { position: absolute; top: 50%; width: calc(100% + 40px); left: -20px; display: flex; justify-content: space-between; transform: translateY(-50%); }
+    .gallery-nav button { background: rgba(255,255,255,.8); border: 1px solid var(--amber3); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 20px; color: var(--muted); box-shadow: 0 2px 6px rgba(0,0,0,.15); }
+    .photo-caption { margin-top: 12px; font-weight: 600; color: var(--muted); font-size: 14px; min-height: 20px; }
+    .media-actions-container { display: flex; flex-direction: column; align-items: center; gap: 20px; margin-top: 24px; }
+    .music-box{ padding:14px; border-radius:14px; background:#fffef8; box-shadow:0 4px 12px rgba(0,0,0,.15); display:none; width:100%; max-width:450px; }
     .music-box p{margin:0 0 8px; font-weight:800; color:#a16207}
     audio{display:none}
     .custom-player{ display:flex; align-items:center; gap:10px; }
-    #playPauseBtn{
-      background:var(--amber2); border:none; border-radius:50%; width:40px; height:40px;
-      cursor:pointer; display:flex; justify-content:center; align-items:center;
-      box-shadow: 0 2px 5px rgba(0,0,0,.2); flex-shrink:0;
-    }
+    #playPauseBtn{ background:var(--amber2); border:none; border-radius:50%; width:40px; height:40px; cursor:pointer; display:flex; justify-content:center; align-items:center; box-shadow: 0 2px 5px rgba(0,0,0,.2); flex-shrink:0; }
     #playPauseBtn svg{width:20px; height:20px; fill:#3a2a05;}
     .progress-container{ flex-grow:1; background:#fde68a; height:8px; border-radius:999px; cursor:pointer; }
     .progress-bar{ background:linear-gradient(90deg,var(--amber1),var(--amber2)); height:100%; width:0%; border-radius:999px; }
     .time-display{ font-size:12px; font-weight:800; color:#a16207; }
     .volume-control{display:flex; align-items:center; gap:8px;}
     .volume-control svg{width:20px; height:20px; fill:#a16207;}
-    #volumeSlider{
-      -webkit-appearance:none; appearance:none; width:80px; height:6px; background:#fde68a;
-      outline:none; border-radius:999px; cursor:pointer;
-    }
+    #volumeSlider{ -webkit-appearance:none; appearance:none; width:80px; height:6px; background:#fde68a; outline:none; border-radius:999px; cursor:pointer; }
     #volumeSlider::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; width:14px; height:14px; background:var(--amber2); border:2px solid #fff; border-radius:50%; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,.2); }
     #volumeSlider::-moz-range-thumb{ width:14px; height:14px; background:var(--amber2); border:2px solid #fff; border-radius:50%; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,.2); }
-
-    /* ====== BOTONES DE ACCIÓN REDISEÑADOS ====== */
-    .action-buttons {
-      display: flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:15px;
-    }
-    .action-btn {
-      display: flex; align-items: center; gap: 8px;
-      padding: 12px 22px; border:none; border-radius:24px;
-      color:#3a2a05; font-weight:800; cursor:pointer; font-size:14px;
-      box-shadow:0 4px 12px rgba(0,0,0,.18); transition: all .3s ease;
-    }
+    .action-buttons { display: flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:15px; }
+    .action-btn { display: flex; align-items: center; gap: 8px; padding: 12px 22px; border:none; border-radius:24px; color:#3a2a05; font-weight:800; cursor:pointer; font-size:14px; box-shadow:0 4px 12px rgba(0,0,0,.18); transition: all .3s ease; }
     .action-btn svg { width: 18px; height: 18px; fill: #3a2a05; }
     .surprise-btn { background:linear-gradient(135deg,var(--amber1),var(--amber2)); }
     .apology-btn { background: #fff; border: 1px solid var(--amber2); }
     .reason-btn { background: linear-gradient(135deg, #fde68a, #fcd34d); }
     .action-btn:hover {transform:scale(1.05); box-shadow:0 6px 16px rgba(0,0,0,.22);}
-
-    /* Overlay de mensajes */
     .modal-overlay{position:fixed; inset:0; display:none; place-items:center; background:rgba(255,255,255,.92); z-index:200}
-    .modal-box{
-      background:#fff; padding:22px 36px; border-radius:20px; box-shadow:0 0 26px rgba(250,204,21,.4);
-      opacity:0; transform:scale(.9); transition:all .8s ease; width: min(90vw, 600px);
-    }
+    .modal-box{ background:#fff; padding:22px 36px; border-radius:20px; box-shadow:0 0 26px rgba(250,204,21,.4); opacity:0; transform:scale(.9); transition:all .8s ease; width: min(90vw, 600px); }
     .modal-overlay.show .modal-box{opacity:1; transform:scale(1)}
-    
     .final-box{ font-family:'Sacramento',cursive; font-size:clamp(36px,6vw,64px); color:#a16207; }
     .apology-box p, .reason-box p { font-size: 18px; line-height: 1.6; color: var(--muted); text-align: center; white-space: normal; font-weight: 600;}
-    .close-modal-btn {
-      margin-top: 20px; font-size: 14px; cursor: pointer; font-weight: bold; color: #a16207;
-    }
-    
-    /* Lluvia de corazones */
-    .heart-particle {
-      position: absolute; font-size: 20px; pointer-events: none;
-      animation: fall linear forwards;
-      z-index: 100;
-    }
-    @keyframes fall {
-      to { transform: translateY(150px) rotate(90deg); opacity: 0; }
-    }
-    
-    /* ====== SORPRESA SECRETA INTERACTIVA ====== */
-    #secretOverlay {
-      background: rgba(0,0,0,0.95);
-    }
-    #secretContent {
-      font-family: monospace;
-      color: #39ff14; /* Verde lima */
-      font-size: 16px;
-      white-space: pre;
-      text-shadow: 0 0 5px #39ff14;
-      line-height: 1.5;
-      width: min(90vw, 800px);
-      text-align: left;
-    }
-    #secretContent::after {
-      content: '▋';
-      animation: blink 1s step-end infinite;
-    }
+    .close-modal-btn { margin-top: 20px; font-size: 14px; cursor: pointer; font-weight: bold; color: #a16207; }
+    .heart-particle { position: absolute; font-size: 20px; pointer-events: none; animation: fall linear forwards; z-index: 100; }
+    @keyframes fall { to { transform: translateY(150px) rotate(90deg); opacity: 0; } }
+    #secretOverlay { background: rgba(0,0,0,0.95); }
+    #secretContent { font-family: monospace; color: #39ff14; font-size: 16px; white-space: pre; text-shadow: 0 0 5px #39ff14; line-height: 1.5; width: min(90vw, 800px); text-align: left; }
+    #secretContent::after { content: '▋'; animation: blink 1s step-end infinite; }
     @keyframes blink { 50% { opacity: 0; } }
-
-    /* Footer */
-    footer{
-      text-align:center; padding:15px;
-      background:linear-gradient(90deg,#fde68a,#fcd34d);
-      color:#3a2a05; font-size:13px; box-shadow:0 -2px 6px rgba(0,0,0,.15);
-      position:relative; z-index:10; font-weight:bold;
-    }
+    footer{ text-align:center; padding:15px; background:linear-gradient(90deg,#fde68a,#fcd34d); color:#3a2a05; font-size:13px; box-shadow:0 -2px 6px rgba(0,0,0,.15); position:relative; z-index:10; font-weight:bold; }
     footer[hidden]{display:none;}
     #footerPhrase{font-size:12px; font-weight:700; transition:opacity .4s}
     .secret-hint { font-size: 11px; color: var(--muted); margin-top: 8px; font-style: italic; cursor: pointer; }
-    
-    /* Media Queries para Responsive */
-    @media (max-width: 768px){
-      .grid{ grid-template-columns: 1fr; }
-      .custom-player { flex-wrap: wrap; justify-content: center; }
-      .progress-container { order: -1; width: 100%; margin-bottom: 10px; }
-      #secretContent { font-size: 12px; }
-    }
+    @media (max-width: 768px){ .grid{ grid-template-columns: 1fr; } .custom-player { flex-wrap: wrap; justify-content: center; } .progress-container { order: -1; width: 100%; margin-bottom: 10px; } #secretContent { font-size: 12px; } }
   </style>
 </head>
 <body>
 
-  <section id="lockdownScreen">
-    <h2 class="lockdown-title">Una sorpresa se acerca...</h2>
-    <p class="lockdown-subtitle">Estará disponible en:</p>
-    <div id="countdown">
-      <div class="countdown-unit"><span id="days" class="number">00</span><span class="label">Días</span></div>
-      <div class="countdown-unit"><span id="hours" class="number">00</span><span class="label">Horas</span></div>
-      <div class="countdown-unit"><span id="mins" class="number">00</span><span class="label">Minutos</span></div>
-      <div class="countdown-unit"><span id="secs" class="number">00</span><span class="label">Segundos</span></div>
-    </div>
-    <button class="admin-login-btn" id="adminLoginBtn">Acceso Admin</button>
-  </section>
-
-  <div id="adminModal">
-    <div class="admin-card">
-      <h3>Acceso de Administrador</h3>
-      <form id="adminForm">
-        <input type="text" id="adminUser" placeholder="Usuario" required>
-        <input type="password" id="adminPass" placeholder="Contraseña" required>
-        <div id="adminError">Usuario o contraseña incorrectos.</div>
-        <div class="admin-actions">
-          <button type="button" id="cancelAdmin" class="btn" style="background: #eee; color: #555;">Cancelar</button>
-          <button type="submit" class="btn">Entrar</button>
+  <div id="simonGameOverlay" class="game-overlay">
+      <div class="game-container">
+          <h2 class="game-title">Prueba de Memoria</h2>
+          <div id="gameStatus" class="game-status">Repite la secuencia para continuar</div>
+          <div class="simon-pads" id="simonPads">
+              <div class="simon-pad" data-color="1"></div>
+              <div class="simon-pad" data-color="2"></div>
+              <div class="simon-pad" data-color="3"></div>
+              <div class="simon-pad" data-color="4"></div>
+          </div>
+          <div class="gate-actions">
+              <button id="startGameBtn" class="btn">Comenzar</button>
+          </div>
+          <div class="admin-switch">
+              <a id="showAdminBtnFromGame">Acceso Ivo Mathias</a>
+          </div>
+      </div>
+  </div>
+  <div id="userLoginModal" class="login-overlay" hidden>
+    <div class="login-card">
+      <h3>¡Lo lograste!</h3>
+      <p class="hint">Ahora sí, para entrar, necesito saber que eres tú.</p>
+      <form id="userLoginForm">
+        <input type="text" id="loginUser" placeholder="¿Quién es la reina de esta página?" required>
+        <input type="password" id="loginPass" placeholder="El nombre del tazmania" required>
+        <div id="userLoginError" class="login-error-msg">Intenta de nuevo, mi amor.</div>
+        <div class="login-actions">
+          <button type="submit" class="btn">Desbloquear Sorpresa</button>
         </div>
       </form>
     </div>
   </div>
 
+  <div id="adminModal" class="login-overlay" hidden>
+    <div class="login-card">
+        <h3>Acceso Personal</h3>
+        <p class="hint">¿Usted cree que haria el juego mil veces para probar el juego?? ÑOCREO</p>
+        <form id="adminForm">
+            <input type="text" id="adminUser" placeholder="Usuario" value="admin">
+            <input type="password" id="adminPass" placeholder="Contraseña">
+            <div id="adminLoginError" class="login-error-msg">Credenciales incorrectas.</div>
+            <div class="login-actions">
+                <button type="submit" class="btn">Ingresar Y ERA</button>
+            </div>
+        </form>
+         <div class="admin-switch">
+            <a id="showUserBtn">Volver al juego</a>
+        </div>
+    </div>
+</div>
+
   <div class="bg-decor" id="bgDecor"></div>
 
   <section id="gate" class="gate" hidden>
     <div class="gate-card">
-      <h2 class="gate-title">Bienvenida 💛</h2>
-      <p class="gate-sub">Para continuar, verifica tus nombres y responde un breve cuestionario. <br>
-        Usa <b>solo primer nombre y primer apellido</b> con mayúsculas iniciales.</p>
-
-      <div class="step-badge">Paso 1 · Nombres</div>
-      <div id="nameSection" class="name-fields">
-        <label for="nombre">Tu Nombre</label>
-        <input type="text" id="nombre" autocomplete="off" />
-        <label for="nombreNovio">Nombre de tu Novio</label>
-        <input type="text" id="nombreNovio" autocomplete="off" />
-        <div class="gate-actions">
-          <button id="validarBtn" class="btn">Validar nombres</button>
-          <button id="limpiarBtn" class="btn" type="button" style="background:linear-gradient(90deg,#fde68a,#facc15);">Limpiar</button>
+      <h2 class="gate-title">Bienvenida Mi Amor 💛</h2>
+      <div id="nameSection">
+        <p class="gate-sub" style="margin-bottom:0;">Ahora, para continuar, verifica tus nombres.<br>Usa <b>solo primer nombre y primer apellido</b> con mayúsculas iniciales.</p>
+        <div class="step-badge">Paso 1 · Nombres</div>
+        <div class="name-fields">
+          <label for="nombre">Tu Nombre</label>
+          <input type="text" id="nombre" autocomplete="off" />
+          <label for="nombreNovio">Nombre de tu Novio</label>
+          <input type="text" id="nombreNovio" autocomplete="off" />
+          <div class="gate-actions">
+            <button id="validarBtn" class="btn">Validar nombres</button>
+            <button id="limpiarBtn" class="btn" type="button" style="background:linear-gradient(90deg,#fde68a,#facc15);">Limpiar</button>
+          </div>
+          <p id="errorMsg" class="error-msg">❌ MAL MAL.</p>
+          <p id="okMsg" class="ok-msg">✅ ¡Perfecto! Continúa con el cuestionario.</p>
         </div>
-        <p id="errorMsg" class="error-msg">❌ MAL MAL.</p>
-        <p id="okMsg" class="ok-msg">✅ ¡Perfecto! Continúa con el cuestionario.</p>
       </div>
-
       <div id="quizWrap" style="display:none; margin-top:8px;">
         <div class="step-badge">Paso 2 · Cuestionario</div>
         <form id="quizForm">
@@ -391,53 +335,34 @@
     <div class="hero" id="hero-area">
       <h1 id="mainTitle">Para ti, Mi Amor</h1>
       <p class="subtitle" id="dynamicSubtitle">Que estas flores iluminen tu día como tú iluminas mi vida.</p>
-
       <div class="grid">
         <div class="card">Un deseo: que en un tiempo mas amanezcamos juntitos ✨</div>
         <div class="card">Una promesa: regalarte sonrisas diarias y mi amor infinito 💛</div>
         <div class="card">
           Una canción: Bonita - Gino Mella
-          <a href="https://www.youtube.com/watch?v=gP0cno-xkH8&list=RDgP0cno-xkH8&start_radio=1" target="_blank" rel="noopener noreferrer" class="yt-link">
-            Escuchar en YouTube 🎵
-          </a>
+          <a href="https://www.youtube.com/watch?v=gP0cno-xkH8&list=RDgP0cno-xkH8&start_radio=1" target="_blank" rel="noopener noreferrer" class="yt-link">Escuchar en YouTube 🎵</a>
         </div>
       </div>
-
       <div id="loveLetter" class="love-letter"></div>
       <div class="signature" id="signature">Con todo mi corazón, tu amor ✨</div>
-      
       <div class="gallery-container">
-        <div class="gallery-slide active" data-index="0">
-          <div class="gallery-photo"><img src="https://i.imgur.com/wHZfez2.jpeg" alt="Nosotros 1"></div>
-        </div>
-        <div class="gallery-slide" data-index="1">
-          <div class="gallery-photo"><img src="https://i.imgur.com/o9dyEBS.jpeg" alt="Nosotros 2"></div>
-        </div>
-        <div class="gallery-slide" data-index="2">
-          <div class="gallery-photo"><img src="https://i.imgur.com/te2wIIM.jpeg" alt="Nosotros 3"></div>
-        </div>
-        <div class="gallery-nav">
-          <button id="prevBtn">‹</button>
-          <button id="nextBtn">›</button>
-        </div>
+        <div class="gallery-slide active" data-index="0"><div class="gallery-photo"><img src="https://i.imgur.com/wHZfez2.jpeg" alt="Nosotros 1"></div></div>
+        <div class="gallery-slide" data-index="1"><div class="gallery-photo"><img src="https://i.imgur.com/o9dyEBS.jpeg" alt="Nosotros 2"></div></div>
+        <div class="gallery-slide" data-index="2"><div class="gallery-photo"><img src="https://i.imgur.com/te2wIIM.jpeg" alt="Nosotros 3"></div></div>
+        <div class="gallery-nav"><button id="prevBtn">‹</button><button id="nextBtn">›</button></div>
         <div class="photo-caption" id="photoCaption"></div>
       </div>
-      
       <div class="media-actions-container">
         <div class="music-box" id="musicBox">
           <p>Nuestra canción 🎶</p>
-          <audio id="musicPlayer" preload="auto">
-            <source src="https://files.catbox.moe/otu488.mp3" type="audio/mpeg">
-          </audio>
+          <audio id="musicPlayer" preload="auto"><source src="https://files.catbox.moe/otu488.mp3" type="audio/mpeg"></audio>
           <div class="custom-player">
             <button id="playPauseBtn">
               <svg id="playIcon" viewBox="0 0 24 24"><path d="M8,5.14V19.14L19,12.14L8,5.14Z"></path></svg>
               <svg id="pauseIcon" viewBox="0 0 24 24" style="display:none;"><path d="M14,19H18V5H14M6,19H10V5H6V19Z"></path></svg>
             </button>
             <div class="time-display" id="currentTime">00:00</div>
-            <div class="progress-container" id="progressContainer">
-              <div class="progress-bar" id="progressBar"></div>
-            </div>
+            <div class="progress-container" id="progressContainer"><div class="progress-bar" id="progressBar"></div></div>
             <div class="time-display" id="totalTime">00:00</div>
             <div class="volume-control">
               <svg viewBox="0 0 24 24"><path d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z"></path></svg>
@@ -445,46 +370,19 @@
             </div>
           </div>
         </div>
-
         <div class="action-buttons">
-          <button class="action-btn surprise-btn" id="surpriseBtn">
-            <svg viewBox="0 0 24 24"><path d="M21,16.5C21,16.88 20.79,17.21 20.47,17.38L12.57,21.82C12.41,21.94 12.21,22 12,22C11.79,22 11.59,21.94 11.43,21.82L3.53,17.38C3.21,17.21 3,16.88 3,16.5V7.5C3,7.12 3.21,6.79 3.53,6.62L11.43,2.18C11.59,2.06 11.79,2 12,2C12.21,2 12.41,2.06 12.57,2.18L20.47,6.62C20.79,6.79 21,7.12 21,7.5V16.5M12,4.15L5,8.09V15.91L12,19.85L19,15.91V8.09L12,4.15Z"></path></svg>
-            Sorpresa
-          </button>
-          <button class="action-btn apology-btn" id="apologyBtn">
-            <svg viewBox="0 0 24 24"><path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"></path></svg>
-            Unas palabras
-          </button>
-          <button class="action-btn reason-btn" id="reasonBtn">
-            <svg viewBox="0 0 24 24"><path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"></path></svg>
-            Te amo porque...
-          </button>
+          <button class="action-btn surprise-btn" id="surpriseBtn"><svg viewBox="0 0 24 24"><path d="M21,16.5C21,16.88 20.79,17.21 20.47,17.38L12.57,21.82C12.41,21.94 12.21,22 12,22C11.79,22 11.59,21.94 11.43,21.82L3.53,17.38C3.21,17.21 3,16.88 3,16.5V7.5C3,7.12 3.21,6.79 3.53,6.62L11.43,2.18C11.59,2.06 11.79,2 12,2C12.21,2 12.41,2.06 12.57,2.18L20.47,6.62C20.79,6.79 21,7.12 21,7.5V16.5M12,4.15L5,8.09V15.91L12,19.85L19,15.91V8.09L12,4.15Z"></path></svg> Sorpresa</button>
+          <button class="action-btn apology-btn" id="apologyBtn"><svg viewBox="0 0 24 24"><path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"></path></svg> Unas palabras</button>
+          <button class="action-btn reason-btn" id="reasonBtn"><svg viewBox="0 0 24 24"><path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"></path></svg> Te amo porque...</button>
         </div>
       </div>
     </div>
   </main>
 
-  <div id="finalLove" class="modal-overlay">
-    <div id="finalBox" class="modal-box final-box"></div>
-  </div>
-
-  <div id="apologyModal" class="modal-overlay">
-    <div class="modal-box apology-box">
-      <p>Perdón amor por hacértelo por acá pero es una forma de cumplirle el día, yo la amo mucho y quería por lo menos hacerle el detalle, ud sabe que no puedo por que es día de visita y es domingo aparte semana de fiestas patrias pero en la semana le recompensaré pero mientras me dedique a hacerle toda esta programación espero que le guste, te amo con mi vida.</p>
-      <div class="close-modal-btn" id="closeApology">Cerrar</div>
-    </div>
-  </div>
-
-  <div id="reasonModal" class="modal-overlay">
-    <div class="modal-box reason-box">
-      <p id="reasonText"></p>
-      <div class="close-modal-btn" id="closeReason">Cerrar</div>
-    </div>
-  </div>
-
-  <div id="secretOverlay" class="modal-overlay">
-    <pre id="secretContent"></pre>
-  </div>
+  <div id="finalLove" class="modal-overlay"><div id="finalBox" class="modal-box final-box"></div></div>
+  <div id="apologyModal" class="modal-overlay"><div class="modal-box apology-box"><p>Perdón amor por hacértelo por acá pero es una forma de cumplirle el día, yo la amo mucho y quería por lo menos hacerle el detalle, ud sabe que no puedo por que es día de visita y es domingo aparte semana de fiestas patrias pero en la semana le recompensaré pero mientras me dedique a hacerle toda esta programación espero que le guste, te amo con mi vida.</p><div class="close-modal-btn" id="closeApology">Cerrar</div></div></div>
+  <div id="reasonModal" class="modal-overlay"><div class="modal-box reason-box"><p id="reasonText"></p><div class="close-modal-btn" id="closeReason">Cerrar</div></div></div>
+  <div id="secretOverlay" class="modal-overlay"><pre id="secretContent"></pre></div>
 
   <footer hidden>
     <div>Creado con 💛 por Ivo Mathias © 2025</div>
@@ -497,26 +395,11 @@
     const REQUIRED_HER = "Sahla Balut";
     const REQUIRED_HIM = "Ivo Caneo";
     const FLOWER_IMG = "https://i.imgur.com/0QYDEU4.png";
-
-    const PHOTO_CAPTIONS = [
-        "El comienzo de nuestra historia.",
-        "Recuerdo de un día inolvidable.",
-        "Mirando siempre hacia el futuro, juntos."
-    ];
-    
-    const LOVE_REASONS = [
-        "tu increíble capacidad de hacerme sonreír.",
-        "contigo hasta el silencio es cómodo.",
-        "la forma en que tus ojos brillan cuando estás feliz.",
-        "me inspiras a ser una mejor persona cada día.",
-        "tu fortaleza y tu ternura.",
-        "cada momento contigo se siente como una aventura.",
-        "tu risa es mi canción favorita.",
-        "me amas con todos mis defectos."
-    ];
-    
+    const WIN_LEVEL = 8; // Nivel para ganar el juego de secuencia
+    const PHOTO_CAPTIONS = ["El comienzo de nuestra historia.","Recuerdo de un día inolvidable.","Mirando siempre hacia el futuro, juntos."];
+    const LOVE_REASONS = ["tu increíble capacidad de hacerme sonreír.","contigo hasta el silencio es cómodo.","la forma en que tus ojos brillan cuando estás feliz.","me inspiras a ser una mejor persona cada día.","tu fortaleza y tu ternura.","cada momento contigo se siente como una aventura.","tu risa es mi canción favorita.","me amas con todos mis defectos."];
     const SECRET_MESSAGE = `
-    Iniciando protocolo 'AmorEterno.exe'...
+    Iniciando protocolo 'TUKI.exe'...
     Conexión segura establecida con el corazón de Sahla.
     
     Hola, mi amor.
@@ -546,30 +429,20 @@
     
     Transmisión finalizada. Te amo siempre.
     `;
-
-
-    const QUIZ_QUESTIONS = [
-      { q:"¿Qué día celebramos con flores amarillas?", options:["14 de febrero","21 de septiembre","1 de enero"], answer:1 },
-      { q:"¿De qué color son las flores de hoy?", options:["Rojas","Amarillas","Azules"], answer:1 },
-      { q:"Completa: TU", options:["Amor","KI","Vida"], answer:1 }
-    ];
-    
-    const surpriseMessages = [
-      "💖 Siempre juntos, te amo para siempre 💛", "🌻 Te amo con mi vida",
-      "✨ Eres mi hogar y mi destino", "💕 Gracias por ser mi luz y mi alegría"
-    ];
-    const footerPhrases = [
-      "🌻 Hoy y siempre a tu lado", "💛 Mi corazón siempre será tuyo",
-      "✨ Eres mi destino y mi paz", "🎁 Cada día contigo es un regalo"
-    ];
+    const QUIZ_QUESTIONS = [{q:"¿Cual es el dia siguiente a vernos?",options:["Martes","Sabado","Jueves"],answer:1},{q:"¿De qué color son las flores de hoy?",options:["Rojas","Amarillas","Azules"],answer:1},{q:"Completa: TU",options:["Amor","KI","Vida"],answer:1}];
+    const surpriseMessages = ["💖 Siempre juntos, te amo para siempre 💛","🌻 Te amo con mi vida","✨ Eres mi hogar y mi destino","💕 Gracias por ser mi luz y mi alegría"];
+    const footerPhrases = ["🌻 Hoy y siempre a tu lado","💛 Mi corazón siempre será tuyo","✨ Eres mi destino y mi paz","🎁 Cada día contigo es un regalo"];
 
     /* ====== ELEMENTOS ====== */
-    const lockdownScreen = document.getElementById('lockdownScreen');
-    const adminLoginBtn = document.getElementById('adminLoginBtn');
+    const simonGameOverlay = document.getElementById('simonGameOverlay');
+    const userLoginModal = document.getElementById('userLoginModal');
+    const userLoginForm = document.getElementById('userLoginForm');
+    const userLoginError = document.getElementById('userLoginError');
     const adminModal = document.getElementById('adminModal');
     const adminForm = document.getElementById('adminForm');
-    const cancelAdminBtn = document.getElementById('cancelAdmin');
-    const adminErrorMsg = document.getElementById('adminError');
+    const adminLoginError = document.getElementById('adminLoginError');
+    const showAdminBtnFromGame = document.getElementById('showAdminBtnFromGame');
+    const showUserBtn = document.getElementById('showUserBtn');
     const heroArea = document.getElementById('hero-area');
     const reasonBtn = document.getElementById('reasonBtn');
     const reasonModal = document.getElementById('reasonModal');
@@ -581,13 +454,14 @@
     const gate = document.getElementById('gate');
     const mainShell = document.querySelector('.shell');
     const mainFooter = document.querySelector('footer');
+    const nameSection = document.getElementById('nameSection');
+    const quizWrap = document.getElementById('quizWrap');
     const validarBtn = document.getElementById('validarBtn');
     const limpiarBtn = document.getElementById('limpiarBtn');
     const nombreInput = document.getElementById('nombre');
     const nombreNovioInput = document.getElementById('nombreNovio');
     const errorMsg = document.getElementById('errorMsg');
     const okMsg = document.getElementById('okMsg');
-    const quizWrap = document.getElementById('quizWrap');
     const quizForm = document.getElementById('quizForm');
     const quizMount = document.getElementById('quizMount');
     const quizStatus = document.getElementById('quizStatus');
@@ -615,58 +489,145 @@
 
     let validatedHerName = "";
     let msgIndex = 0;
+
+    /* ====== 🧠 LÓGICA DEL JUEGO DE SECUENCIA ====== */
+    const gameStatusEl = document.getElementById('gameStatus');
+    const simonPadsContainer = document.getElementById('simonPads');
+    const startGameBtn = document.getElementById('startGameBtn');
     
-    /* ====== LÓGICA DE CUENTA REGRESIVA Y DESBLOQUEO ====== */
-    const unlockDate = new Date('September 21, 2025 00:01:00').getTime();
+    let sequence = [];
+    let playerSequence = [];
+    let level = 0;
+    let gameActive = false;
+    let showingSequence = false;
 
-    function unlockPage(){
-      lockdownScreen.style.opacity = '0';
-      setTimeout(() => {
-        lockdownScreen.hidden = true;
-        gate.hidden = false;
-        mainShell.hidden = false;
-        mainFooter.hidden = false;
-      }, 800);
-    }
+    const flashPad = (color) => {
+        const pad = simonPadsContainer.querySelector(`[data-color="${color}"]`);
+        pad.classList.add('active');
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(220 * Math.pow(2, (color * 2) / 12), ctx.currentTime);
+            osc.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.2);
+        } catch(e) { /* AudioContext puede fallar */ }
+        
+        setTimeout(() => pad.classList.remove('active'), 300);
+    };
 
-    const countdownInterval = setInterval(() => {
-      const now = new Date().getTime();
-      const distance = unlockDate - now;
+    const playSequence = async () => {
+        showingSequence = true;
+        gameStatusEl.textContent = "Memoriza Amor Tu Puedes...";
+        await new Promise(resolve => setTimeout(resolve, 800));
+        for (const color of sequence) {
+            await new Promise(resolve => setTimeout(resolve, 150));
+            flashPad(color);
+            await new Promise(resolve => setTimeout(resolve, 350));
+        }
+        gameStatusEl.textContent = `Tu turno (Nivel ${level})`;
+        showingSequence = false;
+    };
 
-      if (distance < 0) {
-        clearInterval(countdownInterval);
-        document.getElementById('countdown').innerHTML = "<p style='font-size:24px; color:var(--muted);'>¡La sorpresa está lista!</p>";
-        setTimeout(unlockPage, 1000);
-        return;
-      }
+    const nextLevel = () => {
+        level++;
+        playerSequence = [];
+        const nextColor = Math.floor(Math.random() * 4) + 1;
+        sequence.push(nextColor);
+        playSequence();
+    };
+    
+    const startGame = () => {
+        sequence = [];
+        level = 0;
+        gameActive = true;
+        startGameBtn.style.display = 'none';
+        nextLevel();
+    };
+    
+    const gameOver = () => {
+        gameStatusEl.textContent = '¡Error! Vuelve a intentarlo.';
+        gameActive = false;
+        startGameBtn.style.display = 'block';
+    };
 
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    const playerTurn = (color) => {
+        if (!gameActive || showingSequence) return;
+        
+        playerSequence.push(color);
+        flashPad(color);
+        
+        const currentStep = playerSequence.length - 1;
+        if (playerSequence[currentStep] !== sequence[currentStep]) {
+            gameOver();
+            return;
+        }
 
-      document.getElementById('days').innerText = String(days).padStart(2, '0');
-      document.getElementById('hours').innerText = String(hours).padStart(2, '0');
-      document.getElementById('mins').innerText = String(minutes).padStart(2, '0');
-      document.getElementById('secs').innerText = String(seconds).padStart(2, '0');
-    }, 1000);
+        if (playerSequence.length === sequence.length) {
+            if (level >= WIN_LEVEL) {
+                gameStatusEl.textContent = '¡Increíble memoria! Acceso concedido.';
+                setTimeout(() => {
+                    simonGameOverlay.hidden = true;
+                    userLoginModal.hidden = false;
+                    userLoginModal.classList.add('show');
+                }, 1500);
+            } else {
+                nextLevel();
+            }
+        }
+    };
 
-    adminLoginBtn.addEventListener('click', () => adminModal.classList.add('show'));
-    cancelAdminBtn.addEventListener('click', () => adminModal.classList.remove('show'));
-    adminForm.addEventListener('submit', (e) => {
+    startGameBtn.addEventListener('click', startGame);
+    simonPadsContainer.addEventListener('click', (e) => {
+        if (e.target.classList.contains('simon-pad')) {
+            const color = parseInt(e.target.dataset.color, 10);
+            playerTurn(color);
+        }
+    });
+
+    /* ====== LÓGICA DE INICIO DE SESIÓN Y FLUJO ====== */
+    userLoginForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const user = document.getElementById('adminUser').value;
-      const pass = document.getElementById('adminPass').value;
-      if (user === 'admin' && pass === 'enero7') {
-        adminModal.classList.remove('show');
-        clearInterval(countdownInterval);
-        unlockPage();
+      const user = document.getElementById('loginUser').value;
+      const pass = document.getElementById('loginPass').value;
+      if (user.toLowerCase() === 'sahla' && pass.toLowerCase() === 'ferran') {
+        userLoginModal.hidden = true;
+        gate.hidden = false;
       } else {
-        adminErrorMsg.style.display = 'block';
+        userLoginError.style.display = 'block';
       }
     });
+
+    adminForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const user = document.getElementById('adminUser').value;
+        const pass = document.getElementById('adminPass').value;
+        if (user === 'admin' && pass === 'enero7') {
+            adminModal.hidden = true;
+            simonGameOverlay.hidden = true;
+            userLoginModal.hidden = true;
+            gate.hidden = true;
+            mainShell.hidden = false;
+            mainFooter.hidden = false;
+            startRomanceSequence();
+        } else {
+            adminLoginError.style.display = 'block';
+        }
+    });
     
-    /* ====== ✨ NUEVA LÓGICA PARA SALUDO DINÁMICO ====== */
+    showAdminBtnFromGame.addEventListener('click', () => {
+        simonGameOverlay.hidden = true;
+        adminModal.hidden = false;
+        adminModal.classList.add('show');
+    });
+
+    showUserBtn.addEventListener('click', () => {
+        adminModal.hidden = true;
+        simonGameOverlay.hidden = false;
+    });
+
+    /* ====== SALUDO DINÁMICO ====== */
     const dynamicSubtitle = document.getElementById('dynamicSubtitle');
     const currentHour = new Date().getHours();
     if (currentHour < 12) {
@@ -677,7 +638,7 @@
         dynamicSubtitle.textContent = "Que estas flores velen tus sueños como yo velo por ti.";
     }
     
-    /* ====== ✨ NUEVA LÓGICA PARA GALERÍA DE FOTOS ====== */
+    /* ====== GALERÍA DE FOTOS ====== */
     const slides = document.querySelectorAll('.gallery-slide');
     const captionEl = document.getElementById('photoCaption');
     let currentSlide = 0;
@@ -701,7 +662,7 @@
     
     showSlide(0);
 
-    /* ====== LÓGICA DE BOTONES DE ACCIÓN (SORPRESA, DISCULPAS, RAZONES) ====== */
+    /* ====== BOTONES DE ACCIÓN (SORPRESA, DISCULPAS, RAZONES) ====== */
     surpriseBtn.addEventListener('click', ()=>{
       finalBox.textContent = surpriseMessages[msgIndex];
       finalLove.style.display = "grid";
@@ -723,7 +684,7 @@
         setTimeout(() => apologyModal.style.display = "none", 380);
     });
     
-    /* ====== ✨ NUEVA LÓGICA: SECRETO INTERACTIVO ====== */
+    /* ====== SECRETO INTERACTIVO ====== */
     function typeSecretMessage(element, text, callback) {
         let i = 0;
         element.innerHTML = "";
@@ -750,7 +711,7 @@
         });
     });
     
-    /* ====== ✨ NUEVA LÓGICA: LLUVIA DE CORAZONES ====== */
+    /* ====== LLUVIA DE CORAZONES ====== */
     heroArea.addEventListener('click', function(e) {
         let heart = document.createElement('div');
         heart.className = 'heart-particle';
@@ -772,7 +733,7 @@
         }, duration * 1000);
     });
     
-    /* ====== ✨ NUEVA LÓGICA: GENERADOR DE CUMPLIDOS ====== */
+    /* ====== GENERADOR DE CUMPLIDOS ====== */
     let lastReasonIndex = -1;
     reasonBtn.addEventListener('click', () => {
         let randomIndex;
@@ -870,6 +831,8 @@
         quizOk.style.display='block';
         setTimeout(()=>{
           gate.hidden = true;
+          mainShell.hidden = false;
+          mainFooter.hidden = false;
           startRomanceSequence();
         },700);
       }else{
@@ -882,7 +845,7 @@
     /* ====== CARTA + SONIDO DE TECLAS (suave) ====== */
     const carta = `Querida ${REQUIRED_HER.split(' ')[0]} 💛
 
-Hoy 21 de septiembre quiero regalarte no solo flores amarillas,
+Hoy quiero regalarte no solo flores amarillas,
 sino también mis palabras más sinceras.
 
 Eres mi luz en los días nublados,
@@ -891,6 +854,14 @@ y mi sonrisa en cada momento.
 
 Gracias por existir, gracias por amarme
 y por dejarme amarte con todo mi corazón.
+
+Me encargare de enamorarla cada dia hasta el resto de mi vida
+Siempre estare para usted y velare por usted.
+
+(Se supone que era el 21 pero le gano la ansiedad a usted y a mi JAJA)
+
+Te amo con todo mi corazón. 
+Eres y siempre serás el amor de mi vida, mi princesita hermosa.
 
 Con todo mi amor,
 Ivo ✨`;
